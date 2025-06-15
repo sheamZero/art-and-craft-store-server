@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 // middleware
@@ -23,12 +23,23 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
+
+
+
         const database = client.db("artAndCraftStore");
         const craftItems = database.collection("craftItems");
 
         app.get("/items", async (req, res) => {
             const cursor = craftItems.find();
             const result = await cursor.toArray();
+            res.send(result);
+        })
+        
+        // specific item
+        app.get("/items/:id", async (req, res) => {
+            const id = req.params.id;
+            const new_id = { _id: new ObjectId(id) };
+            const result = await craftItems.findOne(new_id);
             res.send(result);
         })
 
