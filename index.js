@@ -25,9 +25,10 @@ async function run() {
     try {
 
 
-
         const database = client.db("artAndCraftStore");
         const craftItems = database.collection("craftItems");
+        const subcategories = database.collection("subcategories");
+
 
         app.get("/items", async (req, res) => {
             const cursor = craftItems.find();
@@ -48,7 +49,7 @@ async function run() {
             const newData = req.body;
             const result = await craftItems.insertOne(newData);
             res.send(result);
-            console.log(newData);
+            // console.log(newData);
         })
 
         // update items
@@ -79,6 +80,55 @@ async function run() {
             const filter = { _id: new ObjectId(id) };
             const result = await craftItems.deleteOne(filter);
             res.send(result);
+        })
+
+
+        // temporarily insert data in the database
+        // await database.collection("subcategories").insertMany([
+        //     {
+        //         subcategory_Name: "Abstract Line Art",
+        //         image: "https://i.ibb.co/KcMJ1g6S/abstract-Art.jpg",
+        //         description: "Minimal and expressive line-based abstract compositions."
+        //     },
+        //     {
+        //         subcategory_Name: "Cartoon Drawing",
+        //         image: "https://i.ibb.co/5x8NR96w/cartoon-Drawing.webp",
+        //         description: "Fun and colorful cartoon avatars, characters, and comics."
+        //     },
+        //     {
+        //         subcategory_Name: "Pencil Portrait",
+        //         image: "https://i.ibb.co/LXFB5nsv/pencilart.jpg",
+        //         description: "Realistic pencil drawings capturing personal expressions."
+        //     },
+        //     {
+        //         subcategory_Name: "Landscape Drawing",
+        //         image: "https://i.ibb.co/9mqSpKfr/sunset-Overhill.jpg",
+        //         description: "Scenic landscape drawings featuring hills, skies, and nature."
+        //     },
+        //     {
+        //         subcategory_Name: "Watercolor Art",
+        //         image: "https://i.ibb.co/5XqnD6ct/watercolor-Art.jpg",
+        //         description: "Soft watercolor art featuring florals and nature elements."
+        //     },
+        //     {
+        //         subcategory_Name: "Charcoal Drawing",
+        //         image: "https://i.ibb.co/bZh7SBc/urban.jpg",
+        //         description: "Dramatic black-and-white charcoal sketches of urban scenes."
+        //     }
+        // ]);
+
+        app.get("/subcategory", async (req, res) => {
+            const cursor = subcategories.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.get("/subcategory/:sub_name", async (req, res) => {
+            const subName = req.params.sub_name;
+            const cursor = { subcategory_Name: subName };
+            const result = craftItems.find(cursor);
+            const result1 = await result.toArray();
+            res.send(result1);
         })
 
 
